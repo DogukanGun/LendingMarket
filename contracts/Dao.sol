@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
-
+import "./PoolFactory.sol";
 
 contract Governance {
 
@@ -38,9 +38,9 @@ contract Governance {
     event NewPoolOffered(string poolName, address tokenAddress, address offerOwner);
     event OfferFinished(string poolName, bool isApproved);
 
-    constructor(address _governanceTokenAddress,address _poolFactoryAddress) {
+    constructor(address _governanceTokenAddress) {
         governanceTokenAddress = _governanceTokenAddress;
-        poolFactoryAddress = _poolFactoryAddress;
+        poolFactoryAddress = address(new PoolFactory());
         isVotingOn = false;
     }
 
@@ -109,6 +109,8 @@ contract Governance {
         (uint positiveCount, uint negativeCount) = countActiveVotes();
         previosOffers.push(PreviosOffers(positiveCount>negativeCount,poolOffer.offerOwner,poolOffer));
         emit OfferFinished(poolOffer.poolName, positiveCount>negativeCount);
+        // TODO Deployment here
+        // TODO Add pool data
         isVotingOn = false;
         while(votes.length == 0){
             votes.pop();
