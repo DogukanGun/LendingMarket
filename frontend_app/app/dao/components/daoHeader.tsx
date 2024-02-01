@@ -21,7 +21,7 @@ const DaoHeader = ({isDaoOwner,onStakeSuccess}:DaoHeaderProps) => {
     const { config:configOfDaoLeft } = usePrepareContractWrite({
         address: `0x${process.env.NEXT_PUBLIC_DAO_ADDRESS}`,
         abi: daoAbi,
-        functionName: 'joinDao',
+        functionName: 'leftDao',
         args: [],
     });
     const {  write:writeOfDaoLeft } = useContractWrite(configOfDaoLeft);
@@ -35,8 +35,8 @@ const DaoHeader = ({isDaoOwner,onStakeSuccess}:DaoHeaderProps) => {
     const { isSuccess:isSuccessOfLMToken, write:writeOfLMToken } = useContractWrite(configOfLMToken);
 
     useEffect(()=>{
-        writeOfDao && writeOfDao()
-        isSuccessOfDao && onStakeSuccess()
+      isSuccessOfLMToken &&writeOfDao && writeOfDao()
+      isSuccessOfDao && onStakeSuccess()
     },[isSuccessOfLMToken,isSuccessOfDao])
 
     const onButtonClickForJoinDao = () => {

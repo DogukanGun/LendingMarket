@@ -4,3 +4,8 @@ export type PoolOffer = {
     timestamp:any;
     offerOwner:string;
 }
+
+export type Pool = {
+    poolName:string;
+    poolAddress:string;
+}

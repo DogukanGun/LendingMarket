@@ -5,6 +5,9 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "./PoolFactory.sol";
+import "./PoolData.sol";
+import "./interface/IPoolFactory.sol";
+import "./interface/IPoolData.sol";
 
 contract Governance {
 
@@ -27,20 +30,23 @@ contract Governance {
     }
 
     address governanceTokenAddress;
-    address poolFactoryAddress;
+    address public poolFactoryAddress;
+    address public poolDataAddress;
     bool isVotingOn;
     PoolOffer public poolOffer;
     Vote[] votes;
     PreviosOffers[] previosOffers;
-    mapping (address=>bool) voters;
+    mapping (address=>bool) public voters;
     uint totalVoter;
 
     event NewPoolOffered(string poolName, address tokenAddress, address offerOwner);
     event OfferFinished(string poolName, bool isApproved);
+    event NewPoolCreated(string poolName,address poolAddress);
 
     constructor(address _governanceTokenAddress) {
         governanceTokenAddress = _governanceTokenAddress;
         poolFactoryAddress = address(new PoolFactory());
+        poolDataAddress = address(new PoolData());
         isVotingOn = false;
     }
 
@@ -53,6 +59,8 @@ contract Governance {
         require(!isVotingOn, "There is a pool in voting");
         _;
     }
+
+    //TODO add user voted or not 
 
     modifier votingIsOn {
         require(isVotingOn, "There is not a pool in voting");
@@ -76,6 +84,10 @@ contract Governance {
         require(status, "Transfer failed");
         voters[msg.sender] = true;
         totalVoter += 1;
+    }
+
+    function isDaoOwner() external view returns(bool) {
+        return voters[msg.sender];
     }
 
     function leftDao() external onlyTokenHolder{
@@ -109,8 +121,11 @@ contract Governance {
         (uint positiveCount, uint negativeCount) = countActiveVotes();
         previosOffers.push(PreviosOffers(positiveCount>negativeCount,poolOffer.offerOwner,poolOffer));
         emit OfferFinished(poolOffer.poolName, positiveCount>negativeCount);
-        // TODO Deployment here
-        // TODO Add pool data
+        if(positiveCount>negativeCount){
+            address poolAddress = IPoolFactory(poolFactoryAddress).createPool(poolOffer.tokenAddress,poolOffer.poolName);
+            IPoolData(poolDataAddress).addPoolData(poolOffer.poolName,poolAddress);
+            emit NewPoolCreated(poolOffer.poolName, poolAddress);
+        }
         isVotingOn = false;
         while(votes.length == 0){
             votes.pop();

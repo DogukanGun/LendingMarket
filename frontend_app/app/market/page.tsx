@@ -1,54 +1,67 @@
 "use client"
-import { Market } from "@/type/poolOffer";
+
+import { useContractRead } from "wagmi";
+import poolData from '@/public/poolData.json'
+import { Pool } from "@/type/poolOffer";
 import { useState } from "react";
-import { useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
-import marketAbi from '@/public/market.json'
-import productAbi from '@/public/product.json'
-import PoolCard from "./component/productCard";
 
 const Market = () => {
-    const [market, setMarket] = useState<Market[]>()
-    const [productAddress,setProductAddress] = useState("")
-    const [price,setPrice] = useState("")
-    const { config } = usePrepareContractWrite({
-        address: `0x${productAddress.replace("0x","")}`,
-        abi: productAbi.abi,
-        functionName: 'buy',
-        value:BigInt(price),
-        args: [],
-    });
-    const { data, isLoading, isSuccess,write, error  } = useContractWrite(config);
+
+    const [pools,setPools] = useState<Pool[]>([])
 
     useContractRead({
-        address: `0x${process.env.NEXT_PUBLIC_MARKET_ADDRESS}`,
-        abi: marketAbi,
-        onSuccess: (data: Market[]) => {
-            setMarket(data)
+        address: `0x${process.env.NEXT_PUBLIC_POOL_DATA_ADDRESS}`,
+        abi: poolData,
+        onSuccess: (data: Pool[]) => {
+            setPools(data)
         },
-        functionName: 'getProducts',
+        functionName: 'getPoolData',
         args: [],
         enabled: true,
     });
 
-    const buyProduct = (contractAddress: string, price: string) => {
-        setProductAddress(contractAddress);
-        setPrice(price);
-        write && write();
-    }
 
     return (
-        <div className="bg-white py-6 sm:py-8 lg:py-12">
-            <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
-                <div className="mb-10 md:mb-16">
-                    <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-6 lg:text-3xl">Market</h2>
-                </div>
-                {market?.map((market: Market) => {
-                    return (
-                        <PoolCard key={`market-${market.contractPlace}`} onClick={() => buyProduct(market.contractPlace, String(market.price).replace("n", ""))} market={market} />
-                    )
-                })}
+        <>
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">
+                                Pool name
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Token Address
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Details
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {   pools.map((pool:Pool)=>{
+                            return(
+                                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {pool.poolName}
+                                </th>
+                                <td className="px-6 py-4">
+                                    {pool.poolAddress}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">See Details</a>
+                                </td>
+                            </tr>
+                            )
+                        })
+
+                        }
+                    
+                    </tbody>
+                </table>
             </div>
-        </div>
+
+        </>
     )
 }
 

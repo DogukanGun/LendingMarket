@@ -25,7 +25,7 @@ const SellProduct = () => {
     return (
         <div className="bg-white py-6 sm:py-8 lg:py-12">
           <DaoHeader onStakeSuccess={()=>reset()} isDaoOwner={isDaoOwner}/>
-          <PoolOffer/>
+          {isDaoOwner && <PoolOffer/>}
         </div>
     )
 }

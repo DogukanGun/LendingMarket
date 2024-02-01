@@ -3,12 +3,14 @@ import daoAbi from '@/public/dao.json'
 import { PoolOffer } from '@/type/poolOffer';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
 const PoolOffer = () => {
 
     const [poolOffer, setPoolOffer] = useState<PoolOffer>()
-    const [isApproved,setIsApprove] = useState<boolean | null>(null)
+    const [isApproved, setIsApprove] = useState<boolean | null>(null)
+    const [isVoted, setIsVoted] = useState<boolean | null>(false)
+    const { address } = useAccount()
 
     useContractRead({
         address: `0x${process.env.NEXT_PUBLIC_DAO_ADDRESS}`,
@@ -32,12 +34,22 @@ const PoolOffer = () => {
         functionName: 'vote',
         args: [isApproved],
     });
-    const { write } = useContractWrite(config);
-    
+    const { write, isSuccess } = useContractWrite(config);
 
-    useEffect(()=>{
+    useContractRead({
+        address: `0x${process.env.NEXT_PUBLIC_DAO_ADDRESS}`,
+        abi: daoAbi,
+        functionName: 'voters',
+        args: [address],
+        enabled: true,
+        onSuccess(data: boolean) {
+            setIsVoted(data)
+        },
+    });
+
+    useEffect(() => {
         isApproved !== null && write && write()
-    },[isApproved])
+    }, [isApproved])
 
 
     return (
@@ -49,17 +61,16 @@ const PoolOffer = () => {
                         <a className="pb-3 mt-3 font-normal text-blue-400 dark:text-blue-400" href={`https://pegasus.lightlink.io/token/${poolOffer?.tokenAddress}`}>Token Address: {poolOffer?.tokenAddress} </a>
                         <hr />
                         <a className="mb-3 mt-3 font-normal text-blue-400 dark:text-blue-400" href={`https://pegasus.lightlink.io/address/${poolOffer?.offerOwner}`}>Offer Owner: {poolOffer?.offerOwner}</a>
-
-
-                        <div className="inline-flex rounded-md shadow-sm mt-10 " role="group">
-                            <button type="button" onClick={()=>setIsApprove(true)} className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-white rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                        {!isVoted ? (<div className="inline-flex rounded-md shadow-sm mt-10 " role="group">
+                            <button type="button" onClick={() => setIsApprove(true)} className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-white rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                                 Vote for Accept
                             </button>
-                            <button type="button" onClick={()=>setIsApprove(false)} className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                            <button type="button" onClick={() => setIsApprove(false)} className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                                 Vote for Reject
                             </button>
-                        </div>
-
+                        </div>) :
+                            <p className="mb-3 mt-3 font-normal text-blue-400 dark:text-blue-400">You have already voted</p>
+                        }
                     </>
                 ) :
                 <>

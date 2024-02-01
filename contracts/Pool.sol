@@ -30,15 +30,13 @@ contract Pool {
         poolName = _poolName;
     }
 
-    function deposit(uint256 amount) external {
-        require(
-            IERC20(tokenAddress).transferFrom(
+    function deposit(uint256 amount) external  {
+        bool status = IERC20(tokenAddress).transferFrom(
                 msg.sender,
                 address(this),
                 amount
-            ),
-            "Token transfer failed"
-        );
+            );
+        require(status, "Transfer failed");
         totalLiquidity += amount;
         deposits.push(Deposit(msg.sender, block.timestamp, amount, apy, false));
         apy = calculateAPY();

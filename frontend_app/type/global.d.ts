@@ -5,6 +5,7 @@ declare global {
       NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: string
       NEXT_PUBLIC_ALCHEMY_ID: string
       NEXT_PUBLIC_DAO_ADDRESS: string
+      NEXT_PUBLIC_POOL_DATA_ADDRESS: string
       NEXT_PUBLIC_LM_TOKEN_ADDRESS: string
     }
   }
