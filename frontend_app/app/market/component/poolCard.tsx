@@ -1,4 +1,4 @@
-import { Market } from "@/type/market";
+import { Market } from "@/type/poolOffer";
 
 interface ProductCardProps {
     market: Market

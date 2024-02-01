@@ -1,5 +1,5 @@
 "use client"
-import { Market } from "@/type/market";
+import { Market } from "@/type/poolOffer";
 import { useState } from "react";
 import { useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
 import marketAbi from '@/public/market.json'

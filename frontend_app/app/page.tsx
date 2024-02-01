@@ -1,5 +1,4 @@
 "use client"
-import { ConnectKitButton } from "connectkit";
 
 const Home = () => {
   return (

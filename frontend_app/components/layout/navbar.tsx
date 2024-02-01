@@ -5,12 +5,12 @@ const Navbar = () => {
     return (
         <header className="mb-8 flex items-center justify-between py-4 md:mb-12 md:py-8 xl:mb-16 mb-10">
             <a href="/" className="inline-flex items-center gap-2.5 text-2xl font-bold text-black md:text-3xl" aria-label="logo">
-                Blockchain Market
+                Lending Market
             </a>
 
             <nav className="hidden gap-12 lg:flex">
-                <a href="/sell" className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700">Sell Product</a>
-                <a href="/market" className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700">Market</a>
+                <a href="/dao" className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700">DAO</a>
+                <a href="/pools" className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700">Pools</a>
                 <a href="#" className="text-lg font-semibold text-gray-600 transition duration-100 hover:text-indigo-500 active:text-indigo-700">About</a>
             </nav>
 
