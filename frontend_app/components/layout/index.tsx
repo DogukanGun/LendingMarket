@@ -10,7 +10,6 @@ const Layout = ({
         <div className="px-10 min-h-screen">
             <Navbar/>
             {children}
-            <Footer/>
         </div>
     )
 }

@@ -4,6 +4,7 @@ import { useContractRead } from "wagmi";
 import poolData from '@/public/poolData.json'
 import { Pool } from "@/type/poolOffer";
 import { useState } from "react";
+import Link from "next/link";
 
 const Market = () => {
 
@@ -49,7 +50,7 @@ const Market = () => {
                                     {pool.poolAddress}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">See Details</a>
+                                    <Link href={`/market/${pool.poolAddress}-${pool.poolName}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">See Details</Link>
                                 </td>
                             </tr>
                             )
